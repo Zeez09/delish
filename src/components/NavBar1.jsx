@@ -1,0 +1,294 @@
+import React, { useState } from 'react';
+import logo from "../assets/images/Vector.png";
+import { Link } from "react-router-dom";
+import { Sling as Hamburger } from "hamburger-react";
+import { FaChevronDown } from 'react-icons/fa';
+import { CircleUserRound } from "lucide-react";
+import AuthModal from '../components/AuthModal';
+import { useAuth } from "../context/useAuth"; // ✅ global auth
+
+const navLinks = [
+  {
+    label: "HOME",
+    path: "/home",
+    children: [
+      { label: "HOME-TWO", path: "/home-two" },
+      { label: "HOME-THREE", path: "/home-three" },
+    ],
+  },
+  {
+    label: "PAGES",
+    path: "/pages",
+    children: [
+      { label: "", path: "/" },
+      { label: "OUR-TEAM", path: "/team" },
+      { label: "FOOD-GALLERY", path: "/food-gallery" },
+    ],
+  },
+  {
+    label: "SHOP",
+    path: "/shop",
+    children: [
+      { label: "MENU", path: "/menu" },
+      { label: "SHOP", path: "/shop" },
+      { label: "SHOP-DETAILS", path: "/shop-details" },
+    ],
+  },
+  {
+    label: "BLOG",
+    path: "/blog",
+    children: [
+      { label: "Latest Posts", path: "/blog" },
+      { label: "Featured", path: "/featured" },
+    ],
+  },
+  {
+    label: "CONTACT",
+    path: "/contact",
+    children: null,
+  },
+];
+
+const NavBar1 = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [authMode, setAuthMode] = useState("login"); // login | signup
+  const [isOpen, setOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState({});
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState({});
+  const [showProfileMenu, setShowProfileMenu] = useState(false); 
+
+  const { isLoggedIn, logout } = useAuth(); 
+
+  const toggleDropdown = (label) => {
+    setDropdownOpen((prev) => ({
+      ...prev,
+      [label]: !prev[label],
+    }));
+  };
+
+  const toggleMobileDropdown = (label) => {
+    setMobileDropdownOpen((prev) => ({
+      ...prev,
+      [label]: !prev[label],
+    }));
+  };
+
+  const handleProfileClick = () => {
+    if (!isLoggedIn) {
+      setAuthMode("login");
+      setShowModal(true);
+    } else {
+      setShowProfileMenu((prev) => !prev);
+    }
+  };
+
+  const handleLogout = () => {
+    setShowProfileMenu(false);
+    logout();
+  };
+
+  return (
+    <div className="bg-black w-full text-white text-xs px-4 md:px-16 py-4 flex flex-col">
+      {/* Top Info Bar */}
+      <div className="hidden md:flex flex-row justify-between text-[10px] md:text-xs mb-4">
+        <div className='flex gap-6'>
+          <h1>Mon-Wed: 11a-9p</h1>
+          <ul className='list-disc'>
+            <li className='marker:text-gray-600'>Thurs-Sat: 11a-10p</li>
+          </ul>
+        </div>
+        <div className='flex gap-10'>
+          <h3>reservations@delish.com</h3>
+          <ul className='list-disc flex gap-5'>
+            <li className='marker:text-gray-600'>123 456 7899</li>
+            <li className='marker:text-gray-600'>296 Rideo Avenie Mor Berlin 251584</li>
+          </ul>
+        </div>
+      </div>
+
+      <hr className="my-6 border-t border-gray-800" />
+
+      {/* Navbar Main */}
+      <nav className='flex items-center justify-between w-full relative'>
+        <div className='flex items-center gap-2'>
+          <img src={logo} alt="" className='w-7 h-7' />
+          <span className='font-semibold text-2xl'>DELISH</span>
+        </div>
+
+        {/* Desktop Menu */}
+        <ul className="hidden md:flex gap-6 text-sm font-bold items-center relative">
+          {navLinks.map((link, index) => (
+            <li key={index} className="relative capitalize">
+              {link.children ? (
+                <>
+                  <button
+                    onClick={() => toggleDropdown(link.label)}
+                    className="flex items-center gap-1 focus:outline-none hover:text-amber-500 transition"
+                  >
+                    {link.label}
+                    <FaChevronDown
+                      className={`text-xs mt-[2px] transition-transform ${dropdownOpen[link.label] ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+                  {dropdownOpen[link.label] && (
+                    <ul className="absolute left-0 mt-2 bg-white text-black rounded shadow-md z-20 w-44">
+                      {link.children.map((child, idx) => (
+                        <li key={idx} className="px-4 py-2 hover:bg-gray-100">
+                          <Link to={child.path}>{child.label}</Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : (
+                <Link to={link.path} className='hover:text-amber-500 transition'>{link.label}</Link>
+              )}
+            </li>
+          ))}
+
+          {/* Profile/Login Button */}
+          <li className="relative">
+            <button
+              onClick={handleProfileClick}
+              className="flex items-center gap-2 text-sm font-bold hover:text-amber-500 transition"
+            >
+              <CircleUserRound size={20} />
+              <span>{isLoggedIn ? "PROFILE" : "LOGIN / SIGN UP"}</span>
+              {isLoggedIn && (
+                <FaChevronDown
+                  className={`text-xs mt-[2px] transition-transform ${showProfileMenu ? 'rotate-180' : ''}`}
+                />
+              )}
+            </button>
+
+            {isLoggedIn && showProfileMenu && (
+              <div className="absolute right-0 mt-2 bg-white text-black rounded shadow-md z-30 w-48">
+                <Link
+                  to="/account"
+                  className="block px-4 py-2 hover:bg-gray-100"
+                  onClick={() => setShowProfileMenu(false)}
+                >
+                  MY ACCOUNT
+                </Link>
+                <Link
+                  to="/orders"
+                  className="block px-4 py-2 hover:bg-gray-100"
+                  onClick={() => setShowProfileMenu(false)}
+                >
+                  My ORDERS
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
+                >
+                  LOGOUT
+                </button>
+              </div>
+            )}
+          </li>
+        </ul>
+
+        {/* Book a Table Button */}
+        <Link to="/book-table">
+          <button className="hidden md:flex group border border-amber-600 px-6 py-2 items-center gap-2 text-white hover:cursor-pointer">
+            <p>BOOK A TABLE</p>
+            <div className="relative flex items-center h-1">
+              <span className="inline-block w-6 h-px bg-white transform group-hover:translate-x-1 transition-transform duration-300"></span>
+              <span className="absolute -right-4 top-1/2 -translate-y-1/2 text-xs transform group-hover:translate-x-1 transition-transform duration-300">→</span>
+            </div>
+          </button>
+        </Link>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden z-20">
+          <Hamburger toggled={isOpen} toggle={setOpen} size={20} />
+        </div>
+      </nav>
+
+      {/* Mobile Dropdown */}
+      {isOpen && (
+        <div className="md:hidden mt-4 border-t border-gray-700 pt-4 space-y-4">
+          <div className="flex items-center gap-2 text-sm text-white mb-4">
+            {!isLoggedIn ? (
+              <button
+                onClick={() => { setAuthMode("login"); setShowModal(true); setOpen(false); }}
+                className="flex items-center gap-2 text-white text-sm font-bold hover:text-amber-500 transition"
+              >
+                <CircleUserRound size={20} />
+                <span>LOGIN / SIGN UP</span>
+              </button>
+            ) : (
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-2">
+                  <CircleUserRound size={20} />
+                  <span className="font-bold">PROFILE</span>
+                </div>
+                <button
+                  onClick={() => { handleLogout(); setOpen(false); }}
+                  className="text-sm border border-amber-600 px-3 py-1 rounded hover:bg-amber-600 transition"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+
+          {navLinks.map((link, index) => (
+            <div key={index}>
+              {link.children ? (
+                <>
+                  <button
+                    onClick={() => toggleMobileDropdown(link.label)}
+                    className="flex justify-between w-full text-sm font-bold capitalize"
+                  >
+                    <span>{link.label}</span>
+                    <FaChevronDown className={`transition-transform ${mobileDropdownOpen[link.label] ? 'rotate-180' : ''}`} />
+                  </button>
+                  {mobileDropdownOpen[link.label] && (
+                    <div className="mt-2 space-y-2 ml-4">
+                      {link.children.map((child, idx) => (
+                        <Link
+                          key={idx}
+                          to={child.path}
+                          onClick={() => setOpen(false)}
+                          className="block"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <Link
+                  to={link.path}
+                  onClick={() => setOpen(false)}
+                  className="block text-sm font-bold capitalize"
+                >
+                  {link.label}
+                </Link>
+              )}
+            </div>
+          ))}
+
+          <Link to="/book-table">
+            <button className="mt-2 w-full border border-amber-600 py-2 text-sm rounded hover:bg-amber-600 transition">
+              BOOK A TABLE
+            </button>
+          </Link>
+        </div>
+      )}
+
+      {/* Auth Modal */}
+      {showModal && (
+        <AuthModal
+          mode={authMode}
+          setAuthMode={setAuthMode}
+          onClose={() => setShowModal(false)}
+        />
+      )}
+    </div>
+  );
+};
+
+export default NavBar1;
