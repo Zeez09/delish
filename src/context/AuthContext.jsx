@@ -1,30 +1,40 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 
-// ✅ MUST export AuthContext by name
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [token, setToken] = useState(null);
 
-  // check localStorage on page load
+  // ✅ Check localStorage on page load
   useEffect(() => {
-    const storedLogin = localStorage.getItem("isLoggedIn");
-    if (storedLogin === "true") setIsLoggedIn(true);
+    const storedToken = localStorage.getItem("authToken");
+    if (storedToken) {
+      setToken(storedToken);
+      setIsLoggedIn(true);
+    }
   }, []);
 
-  const login = () => {
+  // ✅ Login: store token + update state
+  const login = (userToken) => {
+    setToken(userToken);
     setIsLoggedIn(true);
-    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("authToken", userToken);
   };
 
+  // ✅ Logout: clear token + update state
   const logout = () => {
+    setToken(null);
     setIsLoggedIn(false);
-    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("authToken");
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+// ✅ Helper hook for easy access
+export const useAuth = () => useContext(AuthContext);
