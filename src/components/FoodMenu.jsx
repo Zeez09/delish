@@ -5,9 +5,11 @@ import img3 from "../assets/images/image-waffle-mobile.jpg";
 import img4 from "../assets/images/image-meringue-mobile.jpg";
 import img5 from "../assets/images/image-brownie-mobile.jpg";
 import img6 from "../assets/images/image-cake-mobile.jpg";
-import { Star, X } from "lucide-react";
-import { useAuth } from "../context/useAuth";           // ✅ use global auth
-import AuthModal from "../components/AuthModal";        // ✅ import your modal
+import { Star, X, ShoppingCart } from "lucide-react";
+import { useAuth } from "../context/useAuth";           
+import AuthModal from "../components/AuthModal"; 
+import axios from "axios";
+
 
 const foodItems = [
   { id: 1, name: "Baklava", description: "Non nisi est sit amet facilisis magna", price: 15.0, image: img1 },
@@ -53,12 +55,49 @@ export default function FoodMenu() {
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const proceedToPayment = () => {
-    // Replace with real payment redirect/integration
-    alert("Proceeding to payment...");
+  const proceedToPayment = async () => {
+  try {
+    const token = localStorage.getItem("token"); // make sure you stored the token on login
+
+    if (!token) {
+      alert("You must be logged in to place an order.");
+      return;
+    }
+
+    const formattedItems = cart.map((item) => ({
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      image: item.image, // if your backend stores image too
+    }));
+
+    const response = await fetch("http://localhost:5000/api/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        items: cart,
+        totalAmount: total,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Order failed");
+    }
+
+    alert("✅ Order placed successfully!");
     setCart([]);
     setWantCheckout(false);
-  };
+  } catch (error) {
+    console.error("Order error:", error);
+    alert("❌ Order failed. Please try again.");
+  }
+};
+
 
   const checkout = () => {
     if (cart.length === 0) return; // button is hidden when empty, but guard anyway
@@ -80,10 +119,10 @@ export default function FoodMenu() {
 
   return (
     <div className="flex flex-col md:flex-row mt-10 gap-8">
-      {/* CART */}
+      
       <div className="w-full md:w-1/3">
         <div className="bg-gray-200 shadow-lg p-4 border border-gray-200">
-          <h2 className="font-bold text-xl mb-4">🛒 Your Cart</h2>
+          <h2 className="font-bold text-xl mb-4"><ShoppingCart /> Your Cart</h2>
           {cart.length === 0 ? (
             <p className="text-gray-500">Your cart is empty.</p>
           ) : (
