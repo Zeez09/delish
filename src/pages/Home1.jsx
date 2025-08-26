@@ -185,34 +185,10 @@ const Home1 = () => {
 
 
 
-<div className="flex justify-center mt-10 px-4">
-  <div className="w-full max-w-6xl space-y-6">
-
-    <div>
-      <Link to="/menu"><button className="text-white bg-orange-700 rounded-xl px-5 py-2 hover:bg-orange-800 hover:cursor-pointer">
-        FOOD MENU
-      </button></Link>
-    </div>
-
-    
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <h1 className="font-bold text-3xl">OUR DELICIOUS FOODS</h1>
-      <div className="flex flex-wrap gap-4">
-        <button className="border border-orange-700 px-4 py-2 text-orange-700">ALL FOOD</button>
-        <button className="border border-orange-700 px-4 py-2">BREAKFAST</button>
-        <button className="border border-orange-700 px-4 py-2">LUNCH</button>
-        <button className="border border-orange-700 px-4 py-2">DINNER</button>
-      </div>
-    </div>
-
-    
-    <div>
-      <FoodMenu/>
-      
-
-    </div>
-  </div>
+<div>
+  <FoodMenu/>
 </div>
+
 
 
 
