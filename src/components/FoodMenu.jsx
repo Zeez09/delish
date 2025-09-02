@@ -9,10 +9,11 @@ import img7 from "../assets/images/depositphotos_40605279-Barbeque-Pulled-Pork-S
 import img8 from "../assets/images/depositphotos_23796179-Pizza-Margherita.jpg";
 import img9 from "../assets/images/depositphotos_38935051-Chicken-fettuccine-alfredo-with-spinach.jpg";
 import { Star, X, ShoppingCart } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import AuthModal from "../components/AuthModal";
-
+import PaymentModal from "../components/PaymentModal";
+import { useCart } from "../context/CartContext";
 
 const foodItems = {
   breakfast: [
@@ -41,33 +42,15 @@ const renderStars = () => (
 );
 
 export default function FoodMenu() {
-  const [cart, setCart] = useState([]);
-  const { isLoggedIn } = useAuth();
+  const {cart, addToCart, removeFromCart, total } = useCart();
+  const {isLoggedIn } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [wantCheckout, setWantCheckout] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [showPayment, setShowPayment] = useState(false);
 
-  const addToCart = (item) => {
-    setCart((prevCart) => {
-      const existing = prevCart.find((cartItem) => cartItem.id === item.id);
-      if (existing) {
-        return prevCart.map((cartItem) =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        );
-      } else {
-        return [...prevCart, { ...item, quantity: 1 }];
-      }
-    });
-  };
-
-  const removeFromCart = (itemId) => {
-    setCart((prev) => prev.filter((item) => item.id !== itemId));
-  };
-
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
+  const navigate = useNavigate(); 
+  
   const checkout = () => {
     if (cart.length === 0) return;
     if (!isLoggedIn) {
@@ -75,22 +58,27 @@ export default function FoodMenu() {
       setShowAuthModal(true);
       return;
     }
-
+    setShowPayment(true);
   };
 
   useEffect(() => {
-    if (isLoggedIn && wantCheckout && cart.length > 0) {
+    if (isLoggedIn && wantCheckout && cart.length > 0 && !showPayment) {
       setShowAuthModal(false);
-
+      setShowPayment(true);
     }
   }, [isLoggedIn, wantCheckout, cart.length]);
+
+  const handlePaymentSuccess = () => {
+    setShowPayment(false);
+    setWantCheckout(false);
+    navigate("/successful-order");  // ✅ redirect to success page
+  };
 
   return (
     <div className="flex justify-center mt-10 px-4">
       <div className="w-full max-w-6xl space-y-6">
         
-        
-        <div className="">
+        <div>
           <Link to="/menu">
             <button className="text-white bg-orange-700 rounded-xl px-5 py-2 hover:bg-orange-800 hover:cursor-pointer">
               FOOD MENU
@@ -98,7 +86,6 @@ export default function FoodMenu() {
           </Link>
         </div>
 
-        
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <h1 className="font-bold text-3xl">OUR DELICIOUS FOODS</h1>
 
@@ -119,10 +106,8 @@ export default function FoodMenu() {
           </div>
         </div>
 
-        
         <div className="flex flex-col md:flex-row gap-8">
-          
-          
+          {/* CART */}
           <div className="w-full md:w-1/3">
             <div className="bg-gray-200 shadow-lg p-4 border border-gray-200">
               <h2 className="font-bold text-xl mb-4 flex items-center gap-2">
@@ -164,7 +149,7 @@ export default function FoodMenu() {
 
               {cart.length > 0 && (
                 <button
-                  className="mt-5 w-full bg-orange-700 text-white rounded-xl py-2 font-bold"
+                  className="mt-5 w-full bg-orange-700 text-white rounded-xl py-2 font-bold hover:cursor-pointer hover:bg-orange-800"
                   onClick={checkout}
                 >
                   PROCEED TO CHECKOUT
@@ -198,6 +183,14 @@ export default function FoodMenu() {
         </div>
 
         {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
+
+        {showPayment && (
+          <PaymentModal
+            amount={total}
+            onClose={() => setShowPayment(false)}
+            onSuccess={handlePaymentSuccess}  
+          />
+        )}
       </div>
     </div>
   );

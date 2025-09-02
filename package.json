@@ -10,13 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@paystack/inline-js": "^2.22.7",
     "@tailwindcss/vite": "^4.1.10",
     "axios": "^1.11.0",
     "hamburger-react": "^2.5.2",
+    "jwt-decode": "^4.0.0",
     "lucide-react": "^0.523.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-icons": "^5.5.0",
+    "react-paystack": "^6.0.0",
     "react-router-dom": "^7.6.2",
     "tailwindcss": "^4.1.10"
   },

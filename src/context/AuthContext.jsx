@@ -1,40 +1,53 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
+import { jwtDecode } from "jwt-decode";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null); 
 
-  // ✅ Check localStorage on page load
   useEffect(() => {
     const storedToken = localStorage.getItem("authToken");
     if (storedToken) {
       setToken(storedToken);
       setIsLoggedIn(true);
+
+      try {
+        const decoded = jwtDecode(storedToken);
+        setUser(decoded); 
+      } catch (err) {
+        console.error("Invalid token", err);
+      }
     }
   }, []);
 
-  // ✅ Login: store token + update state
   const login = (userToken) => {
     setToken(userToken);
     setIsLoggedIn(true);
     localStorage.setItem("authToken", userToken);
+
+    try {
+      const decoded = jwtDecode(userToken);
+      setUser(decoded);
+    } catch (err) {
+      console.error("Invalid token", err);
+    }
   };
 
-  // ✅ Logout: clear token + update state
   const logout = () => {
     setToken(null);
     setIsLoggedIn(false);
+    setUser(null);
     localStorage.removeItem("authToken");
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, token, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, token, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// ✅ Helper hook for easy access
 export const useAuth = () => useContext(AuthContext);
