@@ -14,7 +14,8 @@ import FoodGallery1 from './pages/FoodGallery1'
 import Menu from './pages/Menu'
 import ShopDetails from './pages/ShopDetails'
 import Shop from "./pages/Shop"
-import SuccessfulOrder from './pages/SuccessfulOrder'
+import Success from './pages/Success'
+
 
 
 
@@ -37,7 +38,7 @@ const App = () => {
           <Route path='/menu' element ={<Menu/>}></Route>
           <Route path='/shop-details' element ={<ShopDetails/>}></Route>
           <Route path='/shop' element ={<Shop/>}></Route>
-          <Route path='/successful-order' element ={<SuccessfulOrder/>}></Route>
+          <Route path='/success' element ={<Success/>}></Route>
           
           
           </Routes>

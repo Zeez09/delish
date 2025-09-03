@@ -1,4 +1,4 @@
-// src/components/PaymentModal.jsx
+
 import React from "react";
 import { usePaystackPayment } from "react-paystack";
 import { useAuth } from "../context/AuthContext";
@@ -12,7 +12,7 @@ const PaymentModal = ({ amount, onClose }) => {
     publicKey: "pk_test_aa9595381d858c49d21f6378ac51c418418dec90",
     reference: new Date().getTime().toString(),
     email: user?.email || "test@example.com",
-    amount: amount * 100, // Paystack expects amount in kobo
+    amount: amount * 100, 
   };
 
   const initializePayment = usePaystackPayment(config);
@@ -20,12 +20,8 @@ const PaymentModal = ({ amount, onClose }) => {
   const handlePaymentSuccess = (reference) => {
     console.log("Payment successful:", reference);
     localStorage.setItem("transid", reference.reference);
-
-    
-    onClose();
-
-   
     navigate("/success");
+    onClose();
   };
 
   const handlePaymentClose = () => {
@@ -36,12 +32,12 @@ const PaymentModal = ({ amount, onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 px-4">
       <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md relative">
-        {/* Close button */}
+        
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
         >
-          ✕
+          X
         </button>
 
         <h2 className="text-lg font-bold mb-4 text-center">

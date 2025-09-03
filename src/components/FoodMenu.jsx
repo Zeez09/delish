@@ -1,4 +1,12 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
+import { Star, X, ShoppingCart } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/useAuth";
+import { useCart } from "../context/CartContext";
+import AuthModal from "../components/AuthModal";
+import PaymentModal from "../components/PaymentModal";
+
 import img1 from "../assets/images/image-baklava-mobile.jpg";
 import img2 from "../assets/images/image-creme-brulee-mobile.jpg";
 import img3 from "../assets/images/image-waffle-mobile.jpg";
@@ -8,28 +16,22 @@ import img6 from "../assets/images/image-cake-mobile.jpg";
 import img7 from "../assets/images/depositphotos_40605279-Barbeque-Pulled-Pork-Sandwich.jpg";
 import img8 from "../assets/images/depositphotos_23796179-Pizza-Margherita.jpg";
 import img9 from "../assets/images/depositphotos_38935051-Chicken-fettuccine-alfredo-with-spinach.jpg";
-import { Star, X, ShoppingCart } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/useAuth";
-import AuthModal from "../components/AuthModal";
-import PaymentModal from "../components/PaymentModal";
-import { useCart } from "../context/CartContext";
 
 const foodItems = {
   breakfast: [
-    { id: 1, name: "Baklava", description: "Non nisi est sit amet facilisis magna", price: 15.0, image: img1 },
-    { id: 2, name: "Creme Brulee", description: "Non nisi est sit amet facilisis magna", price: 15.0, image: img2 },
-    { id: 7, name: "pork sand-wich", description: "Non nisi est sit amet facilisis magna", price: 15.0, image: img7},
+    { id: 1, name: "Baklava", description: "Sweet and flaky", price: 15.0, image: img1 },
+    { id: 2, name: "Creme Brulee", description: "Rich custard", price: 15.0, image: img2 },
+    { id: 7, name: "Pork Sandwich", description: "Smoky pulled pork", price: 15.0, image: img7 },
   ],
   lunch: [
-    { id: 3, name: "Waffles", description: "Non nisi est sit amet facilisis magna", price: 15.0, image: img3 },
-    { id: 4, name: "Meringue", description: "Non nisi est sit amet facilisis magna", price: 15.0, image: img4 },
-    { id: 8, name: "Pizza-Margherita", description: "Non nisi est sit amet facilisis magna", price: 15.0, image: img8 },
+    { id: 3, name: "Waffles", description: "Crispy & fluffy", price: 15.0, image: img3 },
+    { id: 4, name: "Meringue", description: "Light & airy", price: 15.0, image: img4 },
+    { id: 8, name: "Pizza Margherita", description: "Classic Italian", price: 15.0, image: img8 },
   ],
   dinner: [
-    { id: 5, name: "Brownie", description: "Non nisi est sit amet facilisis magna", price: 15.0, image: img5 },
-    { id: 6, name: "Cake", description: "Non nisi est sit amet facilisis magna", price: 15.0, image: img6 },
-    { id: 9, name: "Fettucine", description: "Non nisi est sit amet facilisis magna", price: 15.0, image: img9 },
+    { id: 5, name: "Brownie", description: "Fudgy chocolate", price: 15.0, image: img5 },
+    { id: 6, name: "Cake", description: "Soft layered cake", price: 15.0, image: img6 },
+    { id: 9, name: "Fettucine Alfredo", description: "Creamy pasta", price: 15.0, image: img9 },
   ],
 };
 
@@ -42,36 +44,20 @@ const renderStars = () => (
 );
 
 export default function FoodMenu() {
-  const {cart, addToCart, removeFromCart, total } = useCart();
-  const {isLoggedIn } = useAuth();
+  const { cart, addToCart, removeFromCart, total } = useCart();
+  const { isLoggedIn } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [wantCheckout, setWantCheckout] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const [showPayment, setShowPayment] = useState(false);
 
-  const navigate = useNavigate(); 
-  
+  const navigate = useNavigate();
+
   const checkout = () => {
     if (cart.length === 0) return;
     if (!isLoggedIn) {
-      setWantCheckout(true);
       setShowAuthModal(true);
       return;
     }
     setShowPayment(true);
-  };
-
-  useEffect(() => {
-    if (isLoggedIn && wantCheckout && cart.length > 0 && !showPayment) {
-      setShowAuthModal(false);
-      setShowPayment(true);
-    }
-  }, [isLoggedIn, wantCheckout, cart.length]);
-
-  const handlePaymentSuccess = () => {
-    setShowPayment(false);
-    setWantCheckout(false);
-    navigate("/successful-order");  // ✅ redirect to success page
   };
 
   return (
@@ -80,34 +66,15 @@ export default function FoodMenu() {
         
         <div>
           <Link to="/menu">
-            <button className="text-white bg-orange-700 rounded-xl px-5 py-2 hover:bg-orange-800 hover:cursor-pointer">
+            <button className="text-white bg-orange-700 rounded-xl px-5 py-2 hover:bg-orange-800">
               FOOD MENU
             </button>
           </Link>
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <h1 className="font-bold text-3xl">OUR DELICIOUS FOODS</h1>
-
-          <div className="flex gap-4">
-            {["all", "breakfast", "lunch", "dinner"].map((cat) => (
-              <button
-                key={cat}
-                className={`px-4 py-2 rounded-lg font-semibold transition ${
-                  selectedCategory === cat
-                    ? "bg-orange-700 text-white"
-                    : "bg-gray-300 text-black hover:bg-gray-400 hover:cursor-pointer"
-                }`}
-                onClick={() => setSelectedCategory(cat)}
-              >
-                {cat === "all" ? "All Foods" : cat.charAt(0).toUpperCase() + cat.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
+        
         <div className="flex flex-col md:flex-row gap-8">
-          {/* CART */}
+          
           <div className="w-full md:w-1/3">
             <div className="bg-gray-200 shadow-lg p-4 border border-gray-200">
               <h2 className="font-bold text-xl mb-4 flex items-center gap-2">
@@ -131,7 +98,7 @@ export default function FoodMenu() {
                           <span className="text-orange-700">${item.price.toFixed(2)}</span>
                           <button
                             onClick={() => removeFromCart(item.id)}
-                            className="text-xs text-red-600 hover:text-red-800 flex items-center gap-1 mt-1"
+                            className="text-xs text-red-600 hover:text-red-800 mt-1"
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -149,22 +116,19 @@ export default function FoodMenu() {
 
               {cart.length > 0 && (
                 <button
-                  className="mt-5 w-full bg-orange-700 text-white rounded-xl py-2 font-bold hover:cursor-pointer hover:bg-orange-800"
+                  className="mt-5 w-full bg-orange-700 text-white rounded-xl py-2 font-bold hover:bg-orange-800"
                   onClick={checkout}
                 >
-                  PROCEED TO CHECKOUT
+                  PROCEED TO PAYMENT
                 </button>
               )}
             </div>
           </div>
 
-          {/* MENU */}
+          
           <div className="w-full md:w-2/3">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-gray-200 p-2">
-              {(selectedCategory === "all"
-                ? Object.values(foodItems).flat()
-                : foodItems[selectedCategory]
-              ).map((item) => (
+              {Object.values(foodItems).flat().map((item) => (
                 <div
                   key={item.id}
                   className="bg-white shadow-md overflow-hidden border border-gray-100 cursor-pointer"
@@ -182,13 +146,13 @@ export default function FoodMenu() {
           </div>
         </div>
 
+        
         {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
 
         {showPayment && (
           <PaymentModal
             amount={total}
             onClose={() => setShowPayment(false)}
-            onSuccess={handlePaymentSuccess}  
           />
         )}
       </div>
