@@ -116,7 +116,7 @@ const NavBar4 = () => {
       
       <nav className='flex items-center justify-between w-full'>
         <Link to="/"><div className='flex items-center gap-2'>
-          <img src={logo} alt="" className='w-7 h-7' />
+          <img src={logo} alt="" className='w-7.5 h-7' />
           <span className='font-semibold text-2xl'>DELISH</span>
         </div></Link>
 
