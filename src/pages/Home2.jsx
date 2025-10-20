@@ -1,9 +1,9 @@
 import React from 'react'
 import NavBar2 from '../components/NavBar2'
-import vfoot from "../assets/images/vectorfoot.png"
-import vector from "../assets/images/vector1.png"
+import vfoot from "../assets/images/Vectorfoot.png"
+import vector from "../assets/images/Vector1.png"
 import dev from "../assets/images/dev.png"
-import union from "../assets/images/union.png"
+import union from "../assets/images/Union.png"
 import notes from "../assets/images/notes.png"
 import footimg from "../assets/images/depositphotos_240618200-stock-photo-roasted-chicken-wings-barbecue-sauce.jpg"
 import tag from "../assets/images/Discount-Tag 1.png"
