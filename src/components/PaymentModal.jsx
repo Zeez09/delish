@@ -1,32 +1,37 @@
-
 import React from "react";
 import { usePaystackPayment } from "react-paystack";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
-const PaymentModal = ({ amount, onClose }) => {
+const PaymentModal = ({ amount, onClose, onSuccess }) => {
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   const config = {
     publicKey: "pk_test_aa9595381d858c49d21f6378ac51c418418dec90",
     reference: new Date().getTime().toString(),
     email: user?.email || "test@example.com",
-    amount: amount * 100, 
+    amount: amount * 100, // Paystack expects amount in kobo
   };
 
   const initializePayment = usePaystackPayment(config);
 
   const handlePaymentSuccess = (reference) => {
-    console.log("Payment successful:", reference);
-    localStorage.setItem("transid", reference.reference);
-    navigate("/success");
-    onClose();
+    console.log("✅ Payment successful:", reference);
+
+    try {
+      const refString =
+        reference?.reference || reference?.trxref || String(reference || "");
+      localStorage.setItem("transid", refString);
+    } catch (_) {
+      console.error("Could not store transaction reference");
+    }
+
+    
+    if (onSuccess) onSuccess(reference);
   };
 
   const handlePaymentClose = () => {
-    console.log("Payment cancelled by user");
-    onClose();
+    console.log(" Payment cancelled by user");
+    onClose?.();
   };
 
   return (
@@ -37,7 +42,7 @@ const PaymentModal = ({ amount, onClose }) => {
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
         >
-          X
+          ✕
         </button>
 
         <h2 className="text-lg font-bold mb-4 text-center">

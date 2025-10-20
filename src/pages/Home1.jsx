@@ -435,18 +435,18 @@ const Home1 = () => {
 
 
 
-<div class="relative w-full bg-white pt-16 z-10">
+<div className="relative w-full bg-white pt-16 z-10">
   
-  <div class="relative z-30 flex flex-col items-center text-center px-4">
-    <button class="text-white bg-orange-700 rounded-xl px-4 py-2 text-sm">
+  <div className="relative z-30 flex flex-col items-center text-center px-4">
+    <button className="text-white bg-orange-700 rounded-xl px-4 py-2 text-sm">
       MAKE RESERVATIONS
     </button>
-    <h1 class="font-bold text-3xl mt-4">MEET THE EXPERT CHEF</h1>
-    <div class="w-px h-8 bg-orange-700 mt-4"></div>
-    <div class="flex gap-2 justify-center items-center mt-4 z-30">
-      <div class="w-4 h-4 rounded-full bg-gray-700"></div>
-      <div class="w-4 h-4 rounded-full bg-gray-700"></div>
-      <div class="w-4 h-4 rounded-full bg-gray-700"></div>
+    <h1 className="font-bold text-3xl mt-4">MEET THE EXPERT CHEF</h1>
+    <div className="w-px h-8 bg-orange-700 mt-4"></div>
+    <div className="flex gap-2 justify-center items-center mt-4 z-30">
+      <div className="w-4 h-4 rounded-full bg-gray-700"></div>
+      <div className="w-4 h-4 rounded-full bg-gray-700"></div>
+      <div className="w-4 h-4 rounded-full bg-gray-700"></div>
     </div>
   </div>
 
@@ -666,7 +666,6 @@ const Home1 = () => {
 
     </div>
     </div>
-   
 
   );
 };

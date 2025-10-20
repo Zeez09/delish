@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Star, X, ShoppingCart } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -44,10 +43,12 @@ const renderStars = () => (
 );
 
 export default function FoodMenu() {
-  const { cart, addToCart, removeFromCart, total } = useCart();
+  const { cart, addToCart, removeFromCart, clearCart, total } = useCart();
   const { isLoggedIn } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+
+  const [activeCategory, setActiveCategory] = useState("all");
 
   const navigate = useNavigate();
 
@@ -60,19 +61,42 @@ export default function FoodMenu() {
     setShowPayment(true);
   };
 
+  const categories = ["all", "breakfast", "lunch", "dinner"];
+  const displayedItems =
+    activeCategory === "all"
+      ? Object.values(foodItems).flat()
+      : foodItems[activeCategory] || [];
+
   return (
     <div className="flex justify-center mt-10 px-4">
       <div className="w-full max-w-6xl space-y-6">
         
-        <div>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          
           <Link to="/menu">
             <button className="text-white bg-orange-700 rounded-xl px-5 py-2 hover:bg-orange-800">
               FOOD MENU
             </button>
           </Link>
+
+          
+          <div className="flex gap-3">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-4 py-2 rounded-xl font-semibold ${
+                  activeCategory === cat
+                    ? "bg-orange-700 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                {cat === "all" ? "All foods" : cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
 
-        
         <div className="flex flex-col md:flex-row gap-8">
           
           <div className="w-full md:w-1/3">
@@ -81,7 +105,9 @@ export default function FoodMenu() {
                 <ShoppingCart /> Your Cart
               </h2>
               {cart.length === 0 ? (
-                <p className="text-gray-500">Your cart is empty.</p>
+                <p className="text-gray-500">
+                  Your cart is empty.{" "}
+                </p>
               ) : (
                 <ul className="space-y-2">
                   {cart.map((item, index) => (
@@ -127,32 +153,45 @@ export default function FoodMenu() {
 
           
           <div className="w-full md:w-2/3">
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-gray-200 p-2">
-              {Object.values(foodItems).flat().map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white shadow-md overflow-hidden border border-gray-100 cursor-pointer"
-                  onClick={() => addToCart(item)}
-                >
-                  <img src={item.image} alt={item.name} className="w-full h-60 object-cover" />
-                  <div className="p-4 flex items-center flex-col">
-                    {renderStars()}
-                    <h3 className="font-bold text-2xl">{item.name}</h3>
-                    <p className="text-orange-700">${item.price.toFixed(2)}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+  {displayedItems.map((item) => (
+    <div
+      key={item.id}  
+      className="bg-white shadow-md overflow-hidden border border-gray-100 cursor-pointer"
+      onClick={() => addToCart(item)}
+    >
+      <img
+        src={item.image}
+        alt={item.name}
+        className="w-full h-60 object-cover"
+      />
+      <div className="p-4 flex items-center flex-col">
+        {renderStars()}
+        <h3 className="font-bold text-2xl">{item.name}</h3>
+        <p className="text-orange-700">${item.price.toFixed(2)}</p>
+      </div>
+    </div>
+  ))}
+</div>
+
           </div>
         </div>
 
         
         {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
 
+        
         {showPayment && (
           <PaymentModal
             amount={total}
             onClose={() => setShowPayment(false)}
+            onSuccess={() => {
+              console.log("Payment success callback fired");
+              clearCart();
+              setShowPayment(false);
+              navigate("/success");
+            }}
           />
         )}
       </div>
