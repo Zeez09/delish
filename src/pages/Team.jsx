@@ -2,7 +2,7 @@ import React from 'react'
 import NavBar4 from "../components/NavBar4"
 import bg from "../assets/images/depositphotos_11514732-Group-of-professional-female-chefs.jpg"
 import { Link } from 'react-router-dom'
-import Chef from '../components/chef'
+import Chef from '../components/Chef'
 import Footer1 from '../components/Footer1'
 
 const Team = () => {
